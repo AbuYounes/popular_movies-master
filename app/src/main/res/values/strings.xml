@@ -1,0 +1,22 @@
+<resources>
+
+    <string name="app_name">Movies</string>
+    <string name="action_settings">Settings</string>
+    <string name="name_movie">Movie Title</string>
+    <string name="movie_details">Movie Details</string>
+    <string name="plot">Plot Synopsis</string>
+    <string name="rating">User Rating</string>
+    <string name="release">Release Date</string>
+    <string name="pref_sort_order_label">Sort Order</string>
+    <string name="pref_sort_order_key">sortOrder</string>
+    <string name="pref_most_popular">Most Popular</string>
+    <string name="pref_highest_rated">Highest Rated</string>
+    <string name="the_movie_db">themoviedb</string>
+    <string name="tmdb_attribution">This product uses the TMDb API but is not endorsed or certified by TMDb</string>
+    <string name="review_author">Author: %s</string>
+    <string name="bookmark_added">Movie added to bookmarks</string>
+    <string name="bookmark_insert_error">There was an error while saving the movie to bookmarks</string>
+    <string name="bookmark_deleted">Movie deleted from bookmarks</string>
+    <string name="bookmark_delete_error">There was an error while deleting the movie from bookmarks</string>
+    <string name="favorite_movies">favorite movies</string>
+</resources>

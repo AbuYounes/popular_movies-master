@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "/Users/faridbenhaimoud/Downloads/popular_movies-master/app/build/intermediates/res/merged/debug/mipmap-xhdpi/the_movie_db_icon.png",
+        "source": "/Users/faridbenhaimoud/Downloads/popular_movies-master/app/src/main/res/mipmap-xhdpi/the_movie_db_icon.png"
+    },
+    {
+        "merged": "/Users/faridbenhaimoud/Downloads/popular_movies-master/app/build/intermediates/res/merged/debug/mipmap-xhdpi/ic_launcher.png",
+        "source": "/Users/faridbenhaimoud/Downloads/popular_movies-master/app/src/main/res/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/faridbenhaimoud/Downloads/popular_movies-master/app/build/intermediates/res/merged/debug/mipmap-xhdpi/ic_launcher_round.png",
+        "source": "/Users/faridbenhaimoud/Downloads/popular_movies-master/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/faridbenhaimoud/Desktop/Mijn Apps/popular_movies-master/app/build/intermediates/res/merged/debug/mipmap-xhdpi/ic_launcher.png",
+        "source": "/Users/faridbenhaimoud/Desktop/Mijn Apps/popular_movies-master/app/src/main/res/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/faridbenhaimoud/Desktop/Mijn Apps/popular_movies-master/app/build/intermediates/res/merged/debug/mipmap-xhdpi/ic_launcher_round.png",
+        "source": "/Users/faridbenhaimoud/Desktop/Mijn Apps/popular_movies-master/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png"
+    },
+    {
+        "merged": "/Users/faridbenhaimoud/Desktop/Mijn Apps/popular_movies-master/app/build/intermediates/res/merged/debug/mipmap-xhdpi/the_movie_db_icon.png",
+        "source": "/Users/faridbenhaimoud/Desktop/Mijn Apps/popular_movies-master/app/src/main/res/mipmap-xhdpi/the_movie_db_icon.png"
+    }
+]
