@@ -2,8 +2,8 @@
 <resources>
     <string-array name="pref_sort_order">
         <item>@string/pref_most_popular</item>
-        <item>@string/pref_highest_rated</item>
-        <item>@string/favorite_movies</item>
+        <item>@string/pref_top_rated</item>
+        <item>@string/pref_favourite</item>
 
     </string-array>
 

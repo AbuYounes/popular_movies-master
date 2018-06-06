@@ -10,5 +10,4 @@
         android:key="@string/pref_sort_order_key"
         android:summary="%s"
         android:title="@string/pref_sort_order_label" />
-
 </PreferenceScreen>

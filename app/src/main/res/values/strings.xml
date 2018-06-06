@@ -8,9 +8,12 @@
     <string name="rating">User Rating</string>
     <string name="release">Release Date</string>
     <string name="pref_sort_order_label">Sort Order</string>
-    <string name="pref_sort_order_key">sortOrder</string>
-    <string name="pref_most_popular">Most Popular</string>
-    <string name="pref_highest_rated">Highest Rated</string>
+    <string name="pref_sort_order_key">pref_movie_order</string>
+
+    <string name="pref_most_popular">Popular</string>
+    <string name="pref_top_rated">Top rated</string>
+    <string name="pref_favourite">Favourite</string>
+
     <string name="the_movie_db">themoviedb</string>
     <string name="tmdb_attribution">This product uses the TMDb API but is not endorsed or certified by TMDb</string>
     <string name="review_author">Author: %s</string>
@@ -19,4 +22,6 @@
     <string name="bookmark_deleted">Movie deleted from bookmarks</string>
     <string name="bookmark_delete_error">There was an error while deleting the movie from bookmarks</string>
     <string name="favorite_movies">favorite movies</string>
+    <string name="no_connection">\"Error fetching data: No internet connection\"</string>
+    <string name="empty_token">\"Please obtain API Key firstly from themoviedb.org\"</string>
 </resources>

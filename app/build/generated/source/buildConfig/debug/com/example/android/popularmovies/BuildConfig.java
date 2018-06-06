@@ -11,5 +11,5 @@ public final class BuildConfig {
   public static final int VERSION_CODE = 1;
   public static final String VERSION_NAME = "1.0";
   // Fields from build type: debug
-  public static final String THE_MOVIE_DB_API_TOKEN = "f1ea94014091544b9c764429cba2435e";
+  public static final String THE_MOVIE_DB_API_TOKEN = "TMDB_TOKEN_HERE";
 }

@@ -2,7 +2,6 @@ package com.example.android.popularmovies.Utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.widget.Toast;
 
 
 public class CheckConnection {
@@ -14,8 +13,6 @@ public class CheckConnection {
             if (conMgr.getActiveNetworkInfo() != null && conMgr.getActiveNetworkInfo().isAvailable() && conMgr.getActiveNetworkInfo().isConnected())
                 return true;
             else {
-                String message = "Error fetching data: No internet connection";
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 return false;
             }
         } catch (Exception e) {

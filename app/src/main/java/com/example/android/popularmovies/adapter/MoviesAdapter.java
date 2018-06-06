@@ -28,7 +28,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
     public MoviesAdapter(Context context, List<Movie> movieList) {
         this.mContext = context;
         this.movieList = movieList;
+    }
 
+    public void setMovieList(List<Movie> movieList) {
+        this.movieList = movieList;
     }
 
     /**
@@ -51,6 +54,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MyViewHold
         View view = inflater.inflate(layoutIdForMovieCardItem, viewGroup, shouldAttachToParentImmediately);
         return new MyViewHolder(view);
     }
+
+    public List<Movie> getMovieList() {
+        return movieList;
+    }
+
 
     /**
      * OnBindViewHolder is called by the RecyclerView to display the data at the specified

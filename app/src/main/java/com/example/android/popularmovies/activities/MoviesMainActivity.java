@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -21,9 +21,7 @@ import android.widget.Toast;
 
 import com.example.android.popularmovies.BuildConfig;
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.Utils.ApiError;
 import com.example.android.popularmovies.Utils.CheckConnection;
-import com.example.android.popularmovies.Utils.ErrorUtils;
 import com.example.android.popularmovies.adapter.MoviesAdapter;
 import com.example.android.popularmovies.database.MoviesContract;
 import com.example.android.popularmovies.model.Movie;
@@ -38,159 +36,61 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.android.popularmovies.database.MoviesContract.MovieEntry.CONTENT_URI;
 
-public class MoviesMainActivity extends AppCompatActivity
-        implements SharedPreferences.OnSharedPreferenceChangeListener, LoaderManager.LoaderCallbacks<ArrayList<Movie>> {
 
+public class MoviesMainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String WEBPAGE_MOVIE_DB = "https://www.themoviedb.org/";
     private static final String LOG_TAG = MoviesMainActivity.class.getName();
     private static final int TASK_LOADER_ID = 101;
-    public Movie mMovie;
-    MoviesAdapter adapter;
-    private RecyclerView recyclerViewMovies;
-    private ArrayList<Movie> movieList;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private String sortOrder;
 
+    private MoviesAdapter mAdapter;
+    private RecyclerView mRecyclerViewMovies;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private String mSortOrder;
 
-
+    private String mPrefOrderKey;
+    private String mPrefOrderPop;
+    private String mPrefOrderTopRated;
+    private String mPrefOrderFavourite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies_main);
         initViews();
+        if (!CheckConnection.checkInternetConnection(this)) {
+            Toast.makeText(this, R.string.no_connection, Toast.LENGTH_SHORT).show();
+        }
     }
 
 
     private void initViews() {
-
-        recyclerViewMovies = (RecyclerView) findViewById(R.id.recyclerview_movies);
-
-
-        movieList = new ArrayList<>();
-        adapter = new MoviesAdapter(this, movieList);
-
-
+        mRecyclerViewMovies = (RecyclerView) findViewById(R.id.recyclerview_movies);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            recyclerViewMovies.setLayoutManager(new GridLayoutManager(this, 2));
+            mRecyclerViewMovies.setLayoutManager(new GridLayoutManager(this, 2));
         } else {
-            recyclerViewMovies.setLayoutManager(new GridLayoutManager(this, 4));
+            mRecyclerViewMovies.setLayoutManager(new GridLayoutManager(this, 4));
         }
-
-        recyclerViewMovies.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
 
         //source https://www.youtube.com/watch?v=2lcBx4KVUVk
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.main_content);
-        swipeRefreshLayout.setColorSchemeResources(android.R.color.darker_gray);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.main_content);
+        mSwipeRefreshLayout.setColorSchemeResources(android.R.color.darker_gray);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                initViews();
+                requestMovies();
             }
         });
-        CheckConnection.checkInternetConnection(getApplicationContext());
-        checkedSortOrder();
     }
 
-    // making json request source https://www.youtube.com/watch?v=R4XU8yPzSx0
-    private void jsonRequestPopular() {
-
-        try {
-            if (BuildConfig.THE_MOVIE_DB_API_TOKEN.isEmpty()) {
-                Toast.makeText(getApplicationContext(), "Please obtain API Key firstly from themoviedb.org", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            Service apiService =
-                    Client.getClient().create(Service.class);
-            Call<MoviesResponse> call = apiService.getPopularMovies(BuildConfig.THE_MOVIE_DB_API_TOKEN);
-            call.enqueue(new Callback<MoviesResponse>() {
-                @Override
-                public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                    if (response.isSuccessful()) {
-                        List<Movie> movies = response.body().getResults();
-                        recyclerViewMovies.setAdapter(new MoviesAdapter(MoviesMainActivity.this, movies));
-                        recyclerViewMovies.smoothScrollToPosition(0);
-                        if (swipeRefreshLayout.isRefreshing()) {
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
-                    } else {
-                        ApiError apiError = ErrorUtils.parseError(response);
-                        Toast.makeText(getApplicationContext(), apiError.getMessage(),
-                                Toast.LENGTH_SHORT).show();
-
-                    }
-                }
-
-
-                @Override
-                public void onFailure(Call<MoviesResponse> call, Throwable t) {
-                    Log.d("Error", t.getMessage());
-                    //CheckConnection.checkInternetConnection(getApplicationContext());
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-            });
-        } catch (Exception e) {
-            Log.d("Error", e.getMessage());
-            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadSettings();
+        requestMovies();
     }
 
-    /* making json request source https://www.youtube.com/watch?v=R4XU8yPzSx0 && The busy coder's guide to android development
-     page 734-737*/
-    private void jsonRequestTopRated() {
-
-        try {
-            if (BuildConfig.THE_MOVIE_DB_API_TOKEN.isEmpty()) {
-                Toast.makeText(getApplicationContext(), "Please obtain API Key firstly from themoviedb.org", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            Service apiService =
-                    Client.getClient().create(Service.class);
-            Call<MoviesResponse> call = apiService.getTopRatedMovies(BuildConfig.THE_MOVIE_DB_API_TOKEN);
-            call.enqueue(new Callback<MoviesResponse>() {
-                @Override
-                public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                    if (response.isSuccessful()) {
-                        List<Movie> movies = response.body().getResults();
-                        recyclerViewMovies.setAdapter(new MoviesAdapter(MoviesMainActivity.this, movies));
-                        recyclerViewMovies.smoothScrollToPosition(0);
-                        if (swipeRefreshLayout.isRefreshing()) {
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
-                    } else {
-                        ApiError apiError = ErrorUtils.parseError(response);
-                        Toast.makeText(getApplicationContext(), apiError.getMessage(),
-                                Toast.LENGTH_SHORT).show();
-
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<MoviesResponse> call, Throwable t) {
-                    Log.d("Error", t.getMessage());
-                    //CheckConnection.checkInternetConnection(getApplicationContext());
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-            });
-        } catch (Exception e) {
-            Log.d("Error", e.getMessage());
-            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-    //method for opening a webpage
-    public void openWebPage(String url) {
-        Uri uri = Uri.parse(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -214,51 +114,103 @@ public class MoviesMainActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        checkedSortOrder();
-    }
-
-    // checks the sortOrder. which gets changed via settings
-    private void checkedSortOrder() {
+    private void loadSettings() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sortOrder = preferences.getString(
-                this.getString(R.string.pref_sort_order_key),
-                this.getString(R.string.pref_most_popular)
-        );
-        if (sortOrder.equals(this.getString(R.string.pref_most_popular))) {
-            jsonRequestPopular();
-        } else if (sortOrder.equals(this.getString(R.string.pref_highest_rated))) {
-            jsonRequestTopRated();
-        } else if (sortOrder.equals(this.getString(R.string.favorite_movies))) {
-            getSupportLoaderManager().initLoader(0, null, this);
-            if (swipeRefreshLayout.isRefreshing()) {
-                swipeRefreshLayout.setRefreshing(false);
-                if (movieList.size() == 0) {
-                    Intent intent = new Intent(this, MoviesSettingsActivity.class);
-                    startActivity(intent);
-                }
-            }
+        mPrefOrderKey = getString(R.string.pref_sort_order_key);
+        mPrefOrderPop = getString(R.string.pref_most_popular);
+        mPrefOrderTopRated = getString(R.string.pref_top_rated);
+        mPrefOrderFavourite = getString(R.string.pref_favourite);
+
+        mSortOrder = preferences.getString(mPrefOrderKey, mPrefOrderPop);
+    }
+
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this, CONTENT_URI,
+                null, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data.getCount() == 0) {
+            Intent intent = new Intent(this, MoviesSettingsActivity.class);
+            startActivity(intent);
+        } else {
+            displayMovieList(movieCursorToArray(data));
         }
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (movieList.isEmpty()) {
-            checkedSortOrder();
-            // re-queries for all tasks
-            getSupportLoaderManager().restartLoader(TASK_LOADER_ID, null, this);
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    private void requestMovies() {
+        if (mSortOrder.equals(mPrefOrderPop)) {
+            requestMoviesFromNetwork("popular");
+        } else if (mSortOrder.equals(mPrefOrderTopRated)) {
+            requestMoviesFromNetwork("top_rated");
+        } else if (mSortOrder.equals(mPrefOrderFavourite)) {
+            requestMoviesFromDatabase("favourite");
         }
     }
 
+    // making json request source https://www.youtube.com/watch?v=R4XU8yPzSx0
+    private void requestMoviesFromNetwork(String order) {
+        //todo show message to users with invalid or no token
+        Service apiService = Client.getClient().create(Service.class);
+        Call<MoviesResponse> call = apiService.getMovies(order, BuildConfig.THE_MOVIE_DB_API_TOKEN);
+        call.enqueue(new Callback<MoviesResponse>() {
+            @Override
+            public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                displayMovieList(response.body().getResults());
+            }
 
-    private ArrayList<Movie> fetchMoviesFromCursor(Cursor cursor) {
-        ArrayList<Movie> result = new ArrayList<>();
-        Log.d(LOG_TAG, "Found" + cursor.getCount() + " bookmarks");
+            @Override
+            public void onFailure(Call<MoviesResponse> call, Throwable t) {
+                errorWhileRequestingData();
+                Log.d("Error", t.getMessage());
+                mSwipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(MoviesMainActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
+    private void requestMoviesFromDatabase(String order) {
+        getSupportLoaderManager().restartLoader(TASK_LOADER_ID, null, this);
+    }
+
+    private void displayMovieList(List<Movie> movieList) {
+        if (mAdapter == null) {
+            mAdapter = new MoviesAdapter(this, movieList);
+            mRecyclerViewMovies.setAdapter(mAdapter);
+        } else {
+            mAdapter.setMovieList(movieList);
+        }
+        mAdapter.notifyDataSetChanged();
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void errorWhileRequestingData() {
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    //method for opening a webpage
+    public void openWebPage(String url) {
+        Uri uri = Uri.parse(url);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
+    public List<Movie> movieCursorToArray(Cursor cursor) {
+        List<Movie> movieList = new ArrayList<>();
+        //Log.d(LOG_TAG, "Found" + cursor.getCount() + " bookmarks");
         if (cursor.getCount() == 0) {
-            return result;
+            return movieList;
         }
         if (cursor.moveToFirst()) {
             do {
@@ -269,83 +221,12 @@ public class MoviesMainActivity extends AppCompatActivity
                 String posterPathIndex = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.MOVIE_POSTER_PATH));
                 double avgIndex = cursor.getDouble(cursor.getColumnIndex(MoviesContract.MovieEntry.MOVIE_AVG));
                 String releaseDateIndex = cursor.getString(cursor.getColumnIndex(MoviesContract.MovieEntry.MOVIE_RELEASE_DATE));
-                mMovie = new Movie(movieId, titleIndex, posterPathIndex, overviewIndex, releaseDateIndex, avgIndex);
-
-                result.add(mMovie);
-
+                Movie movie = new Movie(movieId, titleIndex, posterPathIndex, overviewIndex, releaseDateIndex, avgIndex);
+                movieList.add(movie);
             } while (cursor.moveToNext());
 
         }
-
-        return result;
+        return movieList;
     }
-
-
-//    @SuppressLint("StaticFieldLeak")
-    @Override
-    public Loader<ArrayList<Movie>> onCreateLoader(int id, final Bundle args) {
-
-        return new AsyncTaskLoader<ArrayList<Movie>>(this) {
-
-            // Initialize a Cursor, this will hold all the task data
-            ArrayList<Movie> mMovieData;
-
-            // onStartLoading() is called when a loader first starts loading data
-            @Override
-            protected void onStartLoading() {
-                if (mMovieData != null) {
-                    // Delivers any previously loaded data immediately
-                    deliverResult(mMovieData);
-                } else {
-                    // Force a new load
-                    mMovieData = new ArrayList<>();
-                    forceLoad();
-                }
-            }
-
-            // loadInBackground() performs asynchronous loading of data
-            @Override
-            public ArrayList<Movie> loadInBackground() {
-                // Will implement to load data
-                // [Hint] use a try/catch block to catch any errors in loading data
-
-                try {
-                    Cursor cursor = getContentResolver().query(MoviesContract.MovieEntry.CONTENT_URI, null, null, null, null);
-                    if (cursor != null) {
-                        Log.d(LOG_TAG, "Cursor is not null");
-                        ArrayList<Movie> res = fetchMoviesFromCursor(cursor);
-                        cursor.close();
-                        return res;
-                    }
-
-                } catch (Exception e) {
-                    Log.e(LOG_TAG, "Failed to asynchronously load data. ");
-                    e.printStackTrace();
-                    return null;
-                }
-                return null;
-            }
-
-            @Override
-            public void deliverResult(ArrayList<Movie> data) {
-                mMovieData = data;
-                super.deliverResult(data);
-            }
-        };
-    }
-
-    @Override
-    public void onLoadFinished(Loader<ArrayList<Movie>> loader, ArrayList<Movie> data) {
-        adapter = new MoviesAdapter(this, data);
-        recyclerViewMovies.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        Log.d("test", "cursor count =" + adapter.getItemCount());
-    }
-
-    @Override
-    public void onLoaderReset(Loader<ArrayList<Movie>> loader) {
-        Log.d(LOG_TAG, "Restarting loader");
-    }
-
 }
 

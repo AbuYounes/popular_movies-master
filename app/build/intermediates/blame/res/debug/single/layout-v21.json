@@ -1,13 +1,5 @@
 [
     {
-        "merged": "/Users/faridbenhaimoud/Downloads/popular_movies-master/app/build/intermediates/res/merged/debug/layout-v21/notification_action_tombstone.xml",
-        "source": "/Users/faridbenhaimoud/.android/build-cache/9d11123f8f42b99c052d647b65771372c501c15b/output/res/layout-v21/notification_action_tombstone.xml"
-    },
-    {
-        "merged": "/Users/faridbenhaimoud/Downloads/popular_movies-master/app/build/intermediates/res/merged/debug/layout-v21/notification_action.xml",
-        "source": "/Users/faridbenhaimoud/.android/build-cache/9d11123f8f42b99c052d647b65771372c501c15b/output/res/layout-v21/notification_action.xml"
-    },
-    {
         "merged": "/Users/faridbenhaimoud/Desktop/Mijn Apps/popular_movies-master/app/build/intermediates/res/merged/debug/layout-v21/notification_template_icon_group.xml",
         "source": "/Users/faridbenhaimoud/.android/build-cache/9d11123f8f42b99c052d647b65771372c501c15b/output/res/layout-v21/notification_template_icon_group.xml"
     },
@@ -16,19 +8,11 @@
         "source": "/Users/faridbenhaimoud/.android/build-cache/9d11123f8f42b99c052d647b65771372c501c15b/output/res/layout-v21/notification_template_custom_big.xml"
     },
     {
-        "merged": "/Users/faridbenhaimoud/Downloads/popular_movies-master/app/build/intermediates/res/merged/debug/layout-v21/notification_template_icon_group.xml",
-        "source": "/Users/faridbenhaimoud/.android/build-cache/9d11123f8f42b99c052d647b65771372c501c15b/output/res/layout-v21/notification_template_icon_group.xml"
-    },
-    {
         "merged": "/Users/faridbenhaimoud/Desktop/Mijn Apps/popular_movies-master/app/build/intermediates/res/merged/debug/layout-v21/notification_action.xml",
         "source": "/Users/faridbenhaimoud/.android/build-cache/9d11123f8f42b99c052d647b65771372c501c15b/output/res/layout-v21/notification_action.xml"
     },
     {
         "merged": "/Users/faridbenhaimoud/Desktop/Mijn Apps/popular_movies-master/app/build/intermediates/res/merged/debug/layout-v21/notification_action_tombstone.xml",
         "source": "/Users/faridbenhaimoud/.android/build-cache/9d11123f8f42b99c052d647b65771372c501c15b/output/res/layout-v21/notification_action_tombstone.xml"
-    },
-    {
-        "merged": "/Users/faridbenhaimoud/Downloads/popular_movies-master/app/build/intermediates/res/merged/debug/layout-v21/notification_template_custom_big.xml",
-        "source": "/Users/faridbenhaimoud/.android/build-cache/9d11123f8f42b99c052d647b65771372c501c15b/output/res/layout-v21/notification_template_custom_big.xml"
     }
 ]

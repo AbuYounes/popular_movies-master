@@ -4,13 +4,14 @@ package com.example.android.popularmovies.response;
 import com.example.android.popularmovies.model.Movie;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MoviesResponse {
     @SerializedName("page")
     private int page;
     @SerializedName("results")
-    private List<Movie> results;
+    private ArrayList<Movie> results;
     @SerializedName("total_results")
     private int totalResults;
     @SerializedName("total_pages")
@@ -24,11 +25,11 @@ public class MoviesResponse {
         this.page = page;
     }
 
-    public List<Movie> getResults() {
+    public ArrayList<Movie> getResults() {
         return results;
     }
 
-    public void setResults(List<Movie> results) {
+    public void setResults(ArrayList<Movie> results) {
         this.results = results;
     }
 
@@ -36,7 +37,7 @@ public class MoviesResponse {
         return results;
     }
 
-    public void setMovies(List<Movie> results) {
+    public void setMovies(ArrayList<Movie> results) {
         this.results = results;
     }
 

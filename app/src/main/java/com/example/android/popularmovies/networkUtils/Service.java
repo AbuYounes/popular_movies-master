@@ -12,6 +12,13 @@ import retrofit2.http.Query;
 
 public interface Service {
     //relative url of the source with query parameter asynchonously via Call
+
+    //
+    @GET("movie/{order}")
+    Call<MoviesResponse> getMovies(@Path("order") String order, @Query("api_key") String apiKey);
+
+
+
     @GET("movie/popular")
     Call<MoviesResponse> getPopularMovies(@Query("api_key") String apiKey);
 
